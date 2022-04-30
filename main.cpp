@@ -10,8 +10,10 @@ int main(int argc, char* argv[]){
 
     cout << graph.get_num_nodes() << " " << graph.get_num_edges() << "\n";
 
-    cout << graph.bfs(1) << "\n";
+    cout << graph.bfs(7299) << "\n";
     cout << graph.get_parent(694) << "\n";
+    cout << graph.get_degree(1) << "\n";
+    cout << graph.four_sweep() << "\n";
 
     return 0;
 }

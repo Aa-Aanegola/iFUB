@@ -3,18 +3,25 @@
 class Graph{
 private:
     std::vector<long long> parent;
+    std::vector<long long> depth;
     std::ifstream f;
     long long num_nodes, num_edges;
+    
+    void reset_parents();
+    void reset_depth();
 public:
     Graph(std::string);
 
     long long get_num_nodes();
     long long get_num_edges();
     long long get_parent(long long);
+    long long get_degree(long long);
     std::vector<long long> get_neighbors(long long);
+    std::vector<long long> get_parents();
+    std::vector<long long> get_depth();
     
     long long bfs(long long);
-    void reset_parents();
+    long long four_sweep();
 };
 
 
@@ -23,10 +30,17 @@ Graph::Graph(std::string file){
     f.read((char*)&num_nodes, sizeof(num_nodes));
     f.read((char*)&num_edges, sizeof(num_edges));
     parent.resize(num_nodes+1, 0);
+    depth.resize(num_nodes+1, -1);
 }
 
 void Graph::reset_parents(){
-    std::fill(parent.begin(), parent.end(), 0);
+    for(auto &i : parent)
+        i = 0;
+}
+
+void Graph::reset_depth(){
+    for(auto &i : depth)
+        i = -1;
 }
 
 long long Graph::get_num_nodes(){
@@ -42,9 +56,10 @@ long long Graph::get_parent(long long node){
 }
 
 std::vector<long long> Graph::get_neighbors(long long node){
-    long long low = 0, high = num_edges;
-        
-    long long from;
+    long long low = 0, high = num_edges, from;
+    f.clear();
+    f.seekg(0, std::ios::beg);
+
     while(low<high){
         long long mid = low + (high-low)/2;
 
@@ -73,12 +88,27 @@ std::vector<long long> Graph::get_neighbors(long long node){
     return neighbors;
 }
 
+std::vector<long long> Graph::get_parents(){
+    std::vector<long long> ret(parent);
+    return ret;
+}
+
+std::vector<long long> Graph::get_depth(){
+    std::vector<long long> ret(depth);
+    return ret;
+}
+
+long long Graph::get_degree(long long node){
+    std::vector<long long> neighbors = get_neighbors(node);
+    return neighbors.size();
+}
+
 long long Graph::bfs(long long root){
     reset_parents();
+    reset_depth();
 
     std::queue<long long> q;
-    std::vector<int> dep(num_nodes+1, -1);
-    dep[root] = 0;
+    depth[root] = 0;
     q.push(root);
 
     while(!q.empty()){
@@ -87,14 +117,44 @@ long long Graph::bfs(long long root){
 
         std::vector<long long> neighbors = get_neighbors(node);
         for(auto &child : neighbors){
-            if(dep[child] == -1){
+            if(depth[child] == -1){
                 q.push(child);
                 parent[child] = node;
-                dep[child] = dep[node]+1;
-                //std::cout << child << " " << parent[child] << " " << dep[child] << "\n";
+                depth[child] = depth[node]+1;
             }
         } 
     }
 
-    return *std::max_element(dep.begin(), dep.end());
+    return *std::max_element(depth.begin(), depth.end());
+}
+
+long long Graph::four_sweep(){
+    long long r1 = 1, max_degree = 0;
+    for(long long node=1; node<=num_nodes; node++){
+        long long degree = get_degree(node);
+        if(degree > max_degree){
+            r1 = node;
+            max_degree = degree;
+        }
+    }
+
+    bfs(r1);
+    long long a1 = std::max_element(depth.begin(), depth.end())-depth.begin();
+    bfs(a1);
+    long long b1 = std::max_element(depth.begin(), depth.end())-depth.begin();
+    long long half_depth = *std::max_element(depth.begin(), depth.end())/2;
+    long long r2 = b1;
+    while(half_depth--)
+        r2 = parent[r2];
+    
+    bfs(r2);
+    long long a2 = std::max_element(depth.begin(), depth.end())-depth.begin();
+    bfs(a2);
+    long long b2 = std::max_element(depth.begin(), depth.end())-depth.begin();
+    half_depth = *std::max_element(depth.begin(), depth.end())/2;
+    long long ret = b2;
+    while(half_depth--)
+        ret = parent[ret];
+
+    return ret;
 }
