@@ -15,10 +15,11 @@ public:
     long long get_num_nodes();
     long long get_num_edges();
     long long get_parent(long long);
+    long long get_depth(long long);
     long long get_degree(long long);
     std::vector<long long> get_neighbors(long long);
     std::vector<long long> get_parents();
-    std::vector<long long> get_depth();
+    std::vector<long long> get_depths();
     
     long long bfs(long long);
     long long four_sweep();
@@ -55,6 +56,10 @@ long long Graph::get_parent(long long node){
     return parent[node];
 }
 
+long long Graph::get_depth(long long node){
+    return depth[node];
+}
+
 std::vector<long long> Graph::get_neighbors(long long node){
     long long low = 0, high = num_edges, from;
     f.clear();
@@ -89,13 +94,11 @@ std::vector<long long> Graph::get_neighbors(long long node){
 }
 
 std::vector<long long> Graph::get_parents(){
-    std::vector<long long> ret(parent);
-    return ret;
+   return parent;
 }
 
-std::vector<long long> Graph::get_depth(){
-    std::vector<long long> ret(depth);
-    return ret;
+std::vector<long long> Graph::get_depths(){
+    return depth;
 }
 
 long long Graph::get_degree(long long node){
@@ -121,6 +124,7 @@ long long Graph::bfs(long long root){
                 q.push(child);
                 parent[child] = node;
                 depth[child] = depth[node]+1;
+                // std::cout << node << " " << child << " " << depth[child] << "\n";
             }
         } 
     }
