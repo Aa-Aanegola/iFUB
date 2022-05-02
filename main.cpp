@@ -11,9 +11,13 @@ pair<long long, long long> iFUB(Graph &G, long long k){
     vector<long long> depths = G.get_depths();
 
     long long max_depth = 0;
-    for(int i = 0; i<bfs_tree.size(); i++){
+    for(int i = 1; i<bfs_tree.size(); i++){
         max_depth = max(max_depth, depths[i]);
     }
+
+    for(auto&i : bfs_tree)
+        cout << i << " ";
+    cout << "\n" << dep << "\n";
 
     vector<vector<long long>> fringe_sets;
     
@@ -49,6 +53,16 @@ pair<long long, long long> iFUB(Graph &G, long long k){
     return make_pair(lb, total_bfs);
 }
 
+pair<long long, long long> naive_diameter(Graph &G, long long k){
+    long long diameter = 0, bfs_count = 0;
+
+    for(int i = 1; i<=G.get_num_nodes(); i++){
+        diameter = max(diameter, G.bfs(i));
+        bfs_count += 1;
+    }
+    return make_pair(diameter, bfs_count);
+}
+
 int main(int argc, char* argv[]){
     if(argc != 2)
         return 1;
@@ -56,5 +70,7 @@ int main(int argc, char* argv[]){
 
     auto res = iFUB(graph, 0);
     cout << res.first << " " << res.second << "\n";
-    return 0;
+    auto res2 = naive_diameter(graph, 0);
+    cout << res2.first << " " << res2.second << "\n";
+    return 0; 
 }

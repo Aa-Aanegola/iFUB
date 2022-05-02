@@ -61,8 +61,8 @@ void gen_graph(long long n, long long m, string file_name){
     m = 0;
     for(int i = 0; i<n; i++)
         m += adj[i].size();
-    m /= 2;
-    cout << n << " " << m << "\n";
+
+    cout << n << " " << m/2 << "\n";
 
     if(file_name == "display"){
         
