@@ -1,7 +1,9 @@
+#ifndef GRAPH_H
+#define GRAPH_H
+
 #include <bits/stdc++.h>
 
-class Graph
-{
+class Graph{
 private:
     std::vector<long long> parent;
     std::vector<long long> depth;
@@ -29,8 +31,7 @@ public:
     long long four_sweep();
 };
 
-Graph::Graph(std::string file)
-{
+Graph::Graph(std::string file){
     fname = file;
     f.open(file.c_str(), std::ios::binary);
     f.read((char *)&num_nodes, sizeof(num_nodes));
@@ -39,40 +40,33 @@ Graph::Graph(std::string file)
     depth.resize(num_nodes + 1, -1);
 }
 
-void Graph::reset_parents()
-{
+void Graph::reset_parents(){
     for (auto &i : parent)
         i = 0;
 }
 
-void Graph::reset_depth()
-{
+void Graph::reset_depth(){
     for (auto &i : depth)
         i = -1;
 }
 
-long long Graph::get_num_nodes()
-{
+long long Graph::get_num_nodes(){
     return num_nodes;
 }
 
-long long Graph::get_num_edges()
-{
+long long Graph::get_num_edges(){
     return num_edges;
 }
 
-long long Graph::get_parent(long long node)
-{
+long long Graph::get_parent(long long node){
     return parent[node];
 }
 
-long long Graph::get_depth(long long node)
-{
+long long Graph::get_depth(long long node){
     return depth[node];
 }
 
-std::vector<long long> Graph::get_neighbors(long long node)
-{
+std::vector<long long> Graph::get_neighbors(long long node){
     long long low = 0, high = num_edges, from;
     std::ifstream f_local;
     f_local.open(fname.c_str(), std::ios::binary);
@@ -80,8 +74,7 @@ std::vector<long long> Graph::get_neighbors(long long node)
     f_local.clear();
     f_local.seekg(0, std::ios::beg);
 
-    while (low < high)
-    {
+    while (low < high){
         long long mid = low + (high - low) / 2;
 
         f_local.seekg((2 + 2 * mid) * sizeof(long long), std::ios::beg);
@@ -96,8 +89,7 @@ std::vector<long long> Graph::get_neighbors(long long node)
     f_local.seekg((2 + 2 * low) * sizeof(long long));
     std::vector<long long> neighbors;
 
-    while (true)
-    {
+    while (true){
         long long from, to;
         f_local.read((char *)&from, sizeof(from));
         if (f_local.eof())
@@ -110,24 +102,20 @@ std::vector<long long> Graph::get_neighbors(long long node)
     return neighbors;
 }
 
-std::vector<long long> Graph::get_parents()
-{
+std::vector<long long> Graph::get_parents(){
     return parent;
 }
 
-std::vector<long long> Graph::get_depths()
-{
+std::vector<long long> Graph::get_depths(){
     return depth;
 }
 
-long long Graph::get_degree(long long node)
-{
+long long Graph::get_degree(long long node){
     std::vector<long long> neighbors = get_neighbors(node);
     return neighbors.size();
 }
 
-long long Graph::bfs(long long root)
-{
+long long Graph::bfs(long long root){
     reset_parents();
     reset_depth();
 
@@ -135,16 +123,14 @@ long long Graph::bfs(long long root)
     depth[root] = 0;
     q.push(root);
 
-    while (!q.empty())
-    {
+    while (!q.empty()){
         long long node = q.front();
         q.pop();
 
         std::vector<long long> neighbors = get_neighbors(node);
         for (auto &child : neighbors)
         {
-            if (depth[child] == -1)
-            {
+            if (depth[child] == -1){
                 q.push(child);
                 parent[child] = node;
                 depth[child] = depth[node] + 1;
@@ -156,8 +142,7 @@ long long Graph::bfs(long long root)
     return *std::max_element(depth.begin(), depth.end());
 }
 
-long long Graph::get_ecc(long long root)
-{
+long long Graph::get_ecc(long long root){
 
     std::vector<long long> local_parents(num_nodes, 0);
     std::vector<long long> local_depths(num_nodes, -1);
@@ -166,15 +151,13 @@ long long Graph::get_ecc(long long root)
     local_depths[root] = 0;
     q.push(root);
 
-    while (!q.empty())
-    {
+    while (!q.empty()){
         long long node = q.front();
         q.pop();
 
         std::vector<long long> neighbors = get_neighbors(node);
         for (auto &child : neighbors)
-            if (local_depths[child] == -1)
-            {
+            if (local_depths[child] == -1){
                 q.push(child);
                 local_parents[child] = node;
                 local_depths[child] = local_depths[node] + 1;
@@ -184,14 +167,11 @@ long long Graph::get_ecc(long long root)
     return *std::max_element(local_depths.begin(), local_depths.end());
 }
 
-long long Graph::four_sweep()
-{
+long long Graph::four_sweep(){
     long long r1 = 1, max_degree = 0;
-    for (long long node = 1; node <= num_nodes; node++)
-    {
+    for (long long node = 1; node <= num_nodes; node++){
         long long degree = get_degree(node);
-        if (degree > max_degree)
-        {
+        if (degree > max_degree){
             r1 = node;
             max_degree = degree;
         }
@@ -217,3 +197,5 @@ long long Graph::four_sweep()
 
     return ret;
 }
+
+#endif
