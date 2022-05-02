@@ -15,10 +15,6 @@ pair<long long, long long> iFUB(Graph &G, long long k){
         max_depth = max(max_depth, depths[i]);
     }
 
-    for(auto&i : bfs_tree)
-        cout << i << " ";
-    cout << "\n" << dep << "\n";
-
     vector<vector<long long>> fringe_sets;
     
     fringe_sets.resize(max_depth+1);
@@ -50,16 +46,17 @@ pair<long long, long long> iFUB(Graph &G, long long k){
         ub = 2*(cur-1);
         cur -= 1;
     }
-    return make_pair(lb, total_bfs);
+    return make_pair(lb, total_bfs+5);
 }
 
 pair<long long, long long> naive_diameter(Graph &G, long long k){
     long long diameter = 0, bfs_count = 0;
 
     for(int i = 1; i<=G.get_num_nodes(); i++){
+        cout << "currently on: " << bfs_count++ << "\r";
         diameter = max(diameter, G.bfs(i));
-        bfs_count += 1;
     }
+    cout << "\n";
     return make_pair(diameter, bfs_count);
 }
 
@@ -68,9 +65,10 @@ int main(int argc, char* argv[]){
         return 1;
     Graph graph(argv[1]);
 
+    cout << "number of nodes: " << graph.get_num_nodes() << " number of edges: " << graph.get_num_edges()/2 << "\n";
     auto res = iFUB(graph, 0);
-    cout << res.first << " " << res.second << "\n";
+    cout << "iFUB computed diameter: " << res.first << " number of BFS's: " << res.second << "\n";
     auto res2 = naive_diameter(graph, 0);
-    cout << res2.first << " " << res2.second << "\n";
+    cout << "naive computed diameter: " << res2.first << " number of BFS's: " << res2.second << "\n";
     return 0; 
 }
