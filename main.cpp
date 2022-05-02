@@ -2,6 +2,7 @@
 #include"graph.hpp"
 
 using namespace std;
+using namespace std::chrono;
 
 pair<long long, long long> iFUB(Graph &G, long long k){
     long long start = G.four_sweep();
@@ -65,10 +66,21 @@ int main(int argc, char* argv[]){
         return 1;
     Graph graph(argv[1]);
 
+
     cout << "number of nodes: " << graph.get_num_nodes() << " number of edges: " << graph.get_num_edges()/2 << "\n";
+
+    auto start = high_resolution_clock::now();
     auto res = iFUB(graph, 0);
-    cout << "iFUB computed diameter: " << res.first << " number of BFS's: " << res.second << "\n";
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+
+    cout << "iFUB computed diameter: " << res.first << " number of BFS's: " << res.second << " time taken: " << duration.count() << " microseconds\n";
+    
+    start = high_resolution_clock::now();
     auto res2 = naive_diameter(graph, 0);
-    cout << "naive computed diameter: " << res2.first << " number of BFS's: " << res2.second << "\n";
+    stop = high_resolution_clock::now();
+    duration = duration_cast<microseconds>(stop-start);
+    
+    cout << "naive computed diameter: " << res2.first << " number of BFS's: " << res2.second << " time taken: " << duration.count() << " microseconds\n";
     return 0; 
 }
