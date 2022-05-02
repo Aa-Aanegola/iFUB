@@ -196,8 +196,7 @@ long long Graph::four_sweep()
             max_degree = degree;
         }
     }
-    std::cout << "max_degree: " << r1 << " " << max_degree << " " << get_degree(10) << "\n";
-
+    
     bfs(r1);
     long long a1 = std::max_element(depth.begin(), depth.end()) - depth.begin();
     bfs(a1);

@@ -6,7 +6,6 @@ using namespace std::chrono;
 
 pair<long long, long long> iFUB(Graph &G, long long k){
     long long start = G.four_sweep();
-    cout << "start node: " << start << "\n";
     long long dep = G.bfs(start);
     vector<long long> bfs_tree = G.get_parents();
     vector<long long> depths = G.get_depths();
@@ -25,21 +24,16 @@ pair<long long, long long> iFUB(Graph &G, long long k){
         fringe_sets[depths[i]].push_back(i);
     }
 
-    cout << "fringe sets created\n";
-
+    
     long long lb = max_depth, ub = 2*max_depth, cur = max_depth, total_bfs=0;
     while(ub-lb > k){
-        cout << "current lower and upper bounds " << lb << " " << ub << "\n";
         long long max_ecc = 0;
-        cout << "number in fringe set " << cur << " " << fringe_sets[cur].size() << "\n";
         int c= 0;
         for(auto &i : fringe_sets[cur]){
-            cout << "currently on: " << c++ << "\r";
             flush(cout);
             max_ecc = max(max_ecc, G.bfs(i));
             total_bfs += 1;
         }
-        cout << "\n";
         
         lb = max(lb, max_ecc);
         if(max(lb, max_ecc) > 2*(cur-1))
@@ -54,16 +48,15 @@ pair<long long, long long> naive_diameter(Graph &G, long long k){
     long long diameter = 0, bfs_count = 0;
 
     for(int i = 1; i<=G.get_num_nodes(); i++){
-        cout << "currently on: " << bfs_count++ << "\r";
         diameter = max(diameter, G.bfs(i));
     }
-    cout << "\n";
     return make_pair(diameter, bfs_count);
 }
 
 int main(int argc, char* argv[]){
     if(argc != 2)
         return 1;
+    cout << std::fixed << std::setprecision(4);
     Graph graph(argv[1]);
 
 
@@ -74,13 +67,13 @@ int main(int argc, char* argv[]){
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
 
-    cout << "iFUB computed diameter: " << res.first << " number of BFS's: " << res.second << " time taken: " << duration.count() << " microseconds\n";
+    cout << "iFUB computed diameter: " << res.first << " number of BFS's: " << res.second << " time taken: " << duration.count()/1e6 << " microseconds\n";
     
     start = high_resolution_clock::now();
     auto res2 = naive_diameter(graph, 0);
     stop = high_resolution_clock::now();
     duration = duration_cast<microseconds>(stop-start);
     
-    cout << "naive computed diameter: " << res2.first << " number of BFS's: " << res2.second << " time taken: " << duration.count() << " microseconds\n";
+    cout << "naive computed diameter: " << res2.first << " number of BFS's: " << res2.second << " time taken: " << duration.count()/1e6 << " microseconds\n";
     return 0; 
 }
